@@ -1,13 +1,13 @@
 package tictactoe_v2;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Scanner;
 
 
 public class Hangman {
     static char[] THEWORD;
-    static int HEALTH = 9;
+    static String guessedWords = "";
+    static int HEALTH = 5;
     static int HIT = 0;
     
     public static void main(String[] args) {
@@ -16,12 +16,17 @@ public class Hangman {
         String word = sc.next();
         hideTheWord(word);
         drawTheHUD(HEALTH, THEWORD);
+        char tip;
+        
         while(true){
-        System.out.print("Tipp: ");
-            char tip = sc.next().charAt(0);
+            System.out.print("Tipp: ");
+            tip = sc.next().charAt(0);
+            while(guessedWords.contains(String.valueOf(tip)) || check(tip)){
+                System.out.println("Ezt a betűt már próbáltad!");
+                System.out.print("Új tipp: ");
+                tip = sc.next().charAt(0);
+            }
             if(!guess(tip, word)) HEALTH--;
-            
-            
             drawTheHUD(HEALTH, THEWORD);
             if(HEALTH == 0) {
                 System.out.println("Ops! Vesztettél.");
@@ -34,6 +39,14 @@ public class Hangman {
         }
         
     }
+    
+    public static boolean check(char tip){
+        for(char x : THEWORD) {
+            if(x == tip) return true;
+        }
+        return false;       
+    }
+    
     
     public static void hideTheWord(String word){
         THEWORD = new char[word.length()];
@@ -51,13 +64,17 @@ public class Hangman {
                 hit = true;
             }
         }
+        if(!hit) {
+            if(guessedWords.length() > 0) guessedWords += ", ";
+            guessedWords += tip;
+        }
         return hit;
     }
     
 
     
     public static void drawTheHUD(int health, char[] theWord){
-        System.out.println("Élet: " + health);
+        System.out.println("Élet: " + health + "    Hibázott szavak: " + guessedWords);
         for(char x: theWord){
             System.out.print(x + " ");
         }
